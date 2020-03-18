@@ -1,0 +1,3 @@
+echo "
+conda activate rna
+"
