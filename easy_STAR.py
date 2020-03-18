@@ -1,13 +1,13 @@
 """
 example:
     #  check settings
-    nano prepare_star_easy.py
+    nano easy_STAR.py
 
     # print settings
-    python prepare_star_easy.py
+    python easy_STAR.py
 
     # generate scripts
-    python prepare_star_easy.py run
+    python easy_STAR.py run
 
     # dangerous
     # to reset to last git version
@@ -64,7 +64,8 @@ def get_sample_settings(sample, settings):
         "sample_dir": sample_dir,
         "read1": settings["samples_dict"][sample]["read1"],
         "read2": settings["samples_dict"][sample]["read2"],
-        "star_out_prefix": sample_prefix + '.STAR',
+        "star_out_prefix": sample_prefix + '.STAR.',
+        "star_out_sam": sample_prefix + '.STAR.Aligned.out.sam',
     })
     return settings
 
@@ -77,6 +78,7 @@ def get_cmd_list(sample_settings):
     cmd_list = [
         get_mkdir_cmd(sample_settings),
         bash_star(sample_settings),
+        bash_delete_sam(sample_settings)
     ]
     return cmd_list
 
@@ -140,6 +142,10 @@ def bash_star(d):
              --outFileNamePrefix  {star_out_prefix}
              --quantMode  TranscriptomeSAM  GeneCounts
              --readFilesCommand gunzip -c""".format(**d)
+
+
+def bash_delete_sam(d):
+    return """rm {star_out_sam}""".format(**d)
 
 
 if __name__ == '__main__':
