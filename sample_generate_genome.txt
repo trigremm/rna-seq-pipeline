@@ -1,8 +1,0 @@
- /home/adminrig/anaconda3/envs/rna/bin/STAR \
---runThreadN 16 \
---runMode genomeGenerate \
---genomeDir ./ensembl_GRCh37_75/ \
---genomeFastaFiles ./ensembl_GRCh37_75/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa \
---sjdbGTFfile ./ensembl_GRCh37_75/Homo_sapiens.GRCh37.75.gtf \
---sjdbOverhang 100 \
---limitGenomeGenerateRAM 234000000000

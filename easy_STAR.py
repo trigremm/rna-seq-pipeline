@@ -15,7 +15,7 @@ example:
 """
 
 
-__VERSION__ = "0.1.0"
+__VERSION__ = "0.1.1"
 
 
 import os, sys
@@ -26,6 +26,7 @@ from collections import defaultdict
 
 
 def get_settings():
+    dir = "~/PublicData/ensembl_GRCh37_75/"
     settings = {
       "number_of_threads": "4",
       "project_root": "/mnt/ds2413p/aigul/KAZ_RNA/KAZ_RNA_STAR",
@@ -35,9 +36,9 @@ def get_settings():
       "R1_fastq_extension": ".R1.fastq.gz",
       "R2_fastq_extension": ".R2.fastq.gz",
       "STAR": "/home/adminrig/anaconda3/envs/rna/bin/STAR",
-      "ref_dir": "~/PublicData/ensembl_GRCh37_75/",
-      "ref": "~/PublicData/ensembl_GRCh37_75/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa",
-      "ref_gtf": "~/PublicData/ensembl_GRCh37_75/Homo_sapiens.GRCh37.75.gtf",
+      "ref_dir": dir,
+      "ref": os.path.join(dir, "Homo_sapiens.GRCh37.75.dna.primary_assembly.fa"),
+      "ref_gtf": os.path.join(dir, "Homo_sapiens.GRCh37.75.gtf"),
       "add_tokens": True,
     }
     samples_dict = load_fastq_samples(settings)
@@ -90,6 +91,7 @@ def write_cmd_list_to_file(sample_settings, cmd_list):
         sample_settings["project_scripts_dir"],
         sample_settings["sample"] + ".ss.sh",
     )
+    os.makedirs(sample_settings["project_scripts_dir"], exist_ok=True)¶
     with open(script_file, "w") as f:
         f.write("#!/bin/bash\n\n")
         for cmd in cmd_list:
