@@ -140,4 +140,5 @@ if __name__ == '__main__':
     if 'run' in sys.argv:
         run_pipeline(settings)
     else:
+        print (__doc__)
         pp.pprint(settings)
