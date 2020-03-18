@@ -55,8 +55,8 @@ def get_sample_settings(sample, settings):
     settings.update({
         "sample": sample,
         "sample_dir": sample_dir,
-        "read1": sample_dict["samples_dict"][sample]["read1"],
-        "read2": sample_dict["samples_dict"][sample]["read2"],
+        "read1": settings["samples_dict"][sample]["read1"],
+        "read2": settings["samples_dict"][sample]["read2"],
         "star_out_prefix": sample_path_prefix,
     })
     return settings
