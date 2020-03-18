@@ -25,28 +25,31 @@ def get_settings():
     settings = {
       "number_of_threads": "4",
       "project_root": "/mnt/ds2413p/aigul/KAZ_RNA/KAZ_RNA_STAR",
-      "fastq_dirs_list": ["/mnt/ds2413p/aigul/archive", ],
+      "fastq_dirs_list": ["/mnt/ds2413p/aigul/archive", "/mnt/ds2413p/q-symphony/icebox/Archive/KAZ_WT/", ],
       "sample_delimiter": "_",
       "fastq_extension": ".fastq.gz",
       "R1_fastq_extension": ".R1.fastq.gz",
       "R2_fastq_extension": ".R2.fastq.gz",
-
       "STAR": "/home/adminrig/anaconda3/envs/rna/bin/STAR",
-
       "ref_dir": "~/PublicData/ensembl_GRCh37_75/",
       "ref": "~/PublicData/ensembl_GRCh37_75/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa",
       "ref_gtf": "~/PublicData/ensembl_GRCh37_75/Homo_sapiens.GRCh37.75.gtf"
     }
     samples_dict = load_fastq_samples(settings)
-    settings["samples_dict"] = {k:samples_dict[k] for k in sorted(samples_dict)}
+    settings.update({
+        "samples_dict": {k:samples_dict[k] for k in sorted(samples_dict)},
+        "project_scripts_dir": os.path.join(settings["project_root"], "scripts"),
+    })
     return settings
 
 
 def run_pipeline(settings):
-    for sample in sorted(settings["samples_dict"]):
+    _ = -1
+    for _, sample in enumerate(sorted(settings["samples_dict"])):
         sample_settings = get_sample_settings(sample, settings)
         cmd_list = get_cmd_list(sample_settings)
         write_cmd_list_to_file(sample_settings, cmd_list)
+    return _
 
 
 def get_sample_settings(sample, settings):
@@ -76,7 +79,7 @@ def get_cmd_list(sample_settings):
 
 def write_cmd_list_to_file(sample_settings, cmd_list):
     script_file = os.path.join(
-        sample_settings["project_script_dir"],
+        sample_settings["project_scripts_dir"],
         sample_settings["sample"] + ".ss.sh",
     )
     with open(script_file, "w") as f:
@@ -138,7 +141,9 @@ def bash_star(d):
 if __name__ == '__main__':
     settings = get_settings()
     if 'run' in sys.argv:
-        run_pipeline(settings)
+        num = run_pipeline(settings)
+        print (f"# processed {num} samples")
+        print (f"# cd {settings['project_scripts_dir']}")
     else:
         print (__doc__)
         pp.pprint(settings)
