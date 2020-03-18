@@ -37,7 +37,8 @@ def get_settings():
       "STAR": "/home/adminrig/anaconda3/envs/rna/bin/STAR",
       "ref_dir": "~/PublicData/ensembl_GRCh37_75/",
       "ref": "~/PublicData/ensembl_GRCh37_75/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa",
-      "ref_gtf": "~/PublicData/ensembl_GRCh37_75/Homo_sapiens.GRCh37.75.gtf"
+      "ref_gtf": "~/PublicData/ensembl_GRCh37_75/Homo_sapiens.GRCh37.75.gtf",
+      "add_tokens": True,
     }
     samples_dict = load_fastq_samples(settings)
     settings.update({
@@ -66,6 +67,7 @@ def get_sample_settings(sample, settings):
         "read2": settings["samples_dict"][sample]["read2"],
         "star_out_prefix": sample_prefix + '.STAR.',
         "star_out_sam": sample_prefix + '.STAR.Aligned.out.sam',
+        "star_out_genecounts":sample_prefix + ".STAR.ReadsPerGene.out.tab",
     })
     return settings
 
@@ -77,7 +79,7 @@ def get_mkdir_cmd(d):
 def get_cmd_list(sample_settings):
     cmd_list = [
         get_mkdir_cmd(sample_settings),
-        bash_star(sample_settings),
+        get_cmd_star(sample_settings),
         bash_delete_sam(sample_settings)
     ]
     return cmd_list
@@ -130,6 +132,32 @@ def reduce_spaces_and_newlines(func):
         s = " ".join([i for i in s.split(" ") if i])
         return s
     return wrapper
+
+
+@reduce_spaces_and_newlines
+def get_cmd(d):
+    d["token"] = "{sample_dir}/token.{sample}.{token_suffix}".format(**d)
+    d["flags"] = " && ".join([" [ -f {:s} ] ".format(i) for i in d["files_list"]]) + " && [ ! -f {token} ] ".format(**d)
+    if d["add_tokens"]:
+        cmd = """
+            {flags} &&
+            dt1=`date +%y%m%d_%H%M%S` && echo $dt1 {token} &&
+            {main_cmd} &&
+            dt2=`date +%y%m%d_%H%M%S` &&
+            echo $dt1 $dt2 > {token} ||
+            echo "TOKEN SKIPPED {token}"
+            """.format(**d)
+    else:
+        cmd = "{main_cmd}".format(**d)
+    return cmd
+
+
+def get_cmd_star(d):
+    d["token_suffix"] = "star"
+    d["files_list"] = [d["read1"], d["read2"]]
+    d["out_file"] = d["star_out_genecounts"]
+    d["main_cmd"] = bash_star(d)
+    return get_cmd(d)
 
 
 @reduce_spaces_and_newlines
