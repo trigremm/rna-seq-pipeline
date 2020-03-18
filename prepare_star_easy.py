@@ -64,7 +64,7 @@ def get_sample_settings(sample, settings):
         "sample_dir": sample_dir,
         "read1": settings["samples_dict"][sample]["read1"],
         "read2": settings["samples_dict"][sample]["read2"],
-        "star_out_prefix": sample_path_prefix,
+        "star_out_prefix": sample_prefix + '.STAR',
     })
     return settings
 
