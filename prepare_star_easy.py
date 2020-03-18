@@ -8,6 +8,10 @@ example:
 
     # generate scripts
     python prepare_star_easy.py run
+
+    # dangerous
+    # to reset to last git version
+    # git fetch --all; git reset --hard origin/master
 """
 
 
